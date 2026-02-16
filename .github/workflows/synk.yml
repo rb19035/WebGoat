@@ -39,15 +39,11 @@ jobs:
                    aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
                    aws-region: us-east-1
 
-            -   name: Dump GitHub context
-                run:
-                    echo "S3 Bucket = ${{ secrets.AWS_S3_DOJO_BUCKET }}"
-
             - name: Upload files to S3
               uses: jakejarvis/s3-sync-action@v0.5.1
               with:
                    args: # Optional
                    env: # Optional
-                   AWS_S3_BUCKET: ${{ secrets.AWS_S3_DOJO_BUCKET }}
+                   AWS_S3_BUCKET: 'dojo-scan-import-bucket'
                    SOURCE_DIR: 'sarif/'
 
