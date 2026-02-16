@@ -18,16 +18,16 @@ jobs:
               env:
                   SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
               with:
-                  args: --sarif-file-output=/sarif/snyk-${{ github.run_number }}.sarif
+                  args: --sarif-file-output=sarif/snyk-${{ github.run_number }}.sarif
             - name: Upload result to GitHub Code Scanning
               uses: github/codeql-action/upload-sarif@v4
               with:
-                  sarif_file: /sarif/snyk-${{ github.run_number }}.sarif
+                  sarif_file: sarif/snyk-${{ github.run_number }}.sarif
             - name: Archive code coverage results
               uses: actions/upload-artifact@v4
               with:
                   name: snyk.sarif
-                  path: /sarif/snyk-${{ github.run_number }}.sarif
+                  path: sarif/snyk-${{ github.run_number }}.sarif
                   retention-days: 5
 
             - name: Configure AWS credentials
@@ -43,4 +43,4 @@ jobs:
                    args: # Optional
                    env: # Optional
                    AWS_S3_BUCKET: ${{ secrets.AWS_S3_DOJO_BUCKET }}
-                   SOURCE_DIR: '/sarif'
+                   SOURCE_DIR: 'sarif/'
