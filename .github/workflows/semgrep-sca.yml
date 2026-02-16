@@ -1,4 +1,4 @@
-name: Semgrep CE scan
+name: Semgrep CE SCA scan
 on:
     push:
         branches:
@@ -22,21 +22,6 @@ jobs:
 
             - name: Checkout repository
               uses: actions/checkout@v2
-
-            - name: Run Semgrep SAST scan
-              run: semgrep scan --config "p/java" --sarif --sarif-output sarif/semgrepSAST-${{ github.run_number }}.sarif
-
-            - name: Archive SAST results
-              uses: actions/upload-artifact@v4
-              with:
-                  name: semgrepSAST-${{ github.run_number }}.sarif
-                  path: sarif/semgrepSAST-${{ github.run_number }}.sarif
-                  retention-days: 5
-
-            - name: Upload SAST SARIF report
-              uses: github/codeql-action/upload-sarif@v4
-              with:
-                sarif_file: sarif/semgrepSAST-${{ github.run_number }}.sarif
 
             - name: Generate Maven dependency tree
               run: mvn dependency:tree -DoutputFile=dependencies.txt || true # '|| true' prevents job failure if tree generation has warnings
