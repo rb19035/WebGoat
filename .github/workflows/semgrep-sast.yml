@@ -24,7 +24,7 @@ jobs:
               uses: actions/checkout@v2
 
             - name: Run Semgrep SAST scan
-              run: semgrep scan --suppress-errors --sarif --sarif-output sarif/semgrepSAST-${{ github.run_number }}.sarif
+              run: semgrep scan --config "p/java" --sarif --sarif-output sarif/semgrepSAST-${{ github.run_number }}.sarif
 
             - name: Archive SAST results
               uses: actions/upload-artifact@v4
