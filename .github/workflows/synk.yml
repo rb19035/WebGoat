@@ -38,9 +38,11 @@ jobs:
                    aws-region: us-east-1
 
             - name: Upload files to S3
+              run: echo "S3 Bucket ${{ secrets.AWS_S3_DOJO_BUCKET }}"
               uses: jakejarvis/s3-sync-action@v0.5.1
               with:
                    args: # Optional
                    env: # Optional
-                   AWS_S3_BUCKET: '${{ secrets.AWS_S3_DOJO_BUCKET }}'
+                   AWS_S3_BUCKET: ${{ secrets.AWS_S3_DOJO_BUCKET }}
                    SOURCE_DIR: 'sarif/'
+
