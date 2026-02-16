@@ -11,14 +11,15 @@ jobs:
     semgrep:
         runs-on: ubuntu-latest
         steps:
-            - name: Checkout repository
-              uses: actions/checkout@v2
 
             - name: Install Semgrep
               run: pip install semgrep
 
+            - name: Checkout repository
+              uses: actions/checkout@v2
+
             - name: Run Semgrep SAST scan
-              run: semgrep scan --config auto --output sarif/semgrepSAST-${{ github.run_number }}.sarif
+              run: semgrep scan --lang java --sarif --sarif-output sarif/semgrepSAST-${{ github.run_number }}.sarif
 
             - name: Upload SAST SARIF report
               uses: github/codeql-action/upload-sarif@v4
@@ -29,7 +30,7 @@ jobs:
               run: mvn dependency:tree -DoutputFile=dependencies.txt || true # '|| true' prevents job failure if tree generation has warnings
 
             - name: Run Semgrep SCA scan
-              run: semgrep --config "p/semgrep-supply-chain" --output sarif/semgrepSCA-${{ github.run_number }}.sarif
+              run: semgrep --config "p/java" --config "p/generic-sca" --sarif --sarif-output sarif/semgrepSCA-${{ github.run_number }}.sarif
 
             - name: Upload SCA SARIF report
               uses: github/codeql-action/upload-sarif@v4
