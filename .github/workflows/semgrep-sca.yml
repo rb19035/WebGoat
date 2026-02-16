@@ -27,7 +27,7 @@ jobs:
               run: mvn dependency:tree -DoutputFile=dependencies.txt || true # '|| true' prevents job failure if tree generation has warnings
 
             - name: Run Semgrep SCA scan
-              run: semgrep ci --supply-chain --config "p/java" --sarif --sarif-output sarif/semgrepSCA-${{ github.run_number }}.sarif || true
+              run: semgrep ci --supply-chain --config "p/java" --suppress-errors --sarif --sarif-output sarif/semgrepSCA-${{ github.run_number }}.sarif
 
             - name: Archive SCA results
               uses: actions/upload-artifact@v4
