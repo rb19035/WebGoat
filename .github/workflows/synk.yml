@@ -19,10 +19,12 @@ jobs:
                   SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
               with:
                   args: --sarif-file-output=sarif/snyk-${{ github.run_number }}.sarif
+
             - name: Upload result to GitHub Code Scanning
               uses: github/codeql-action/upload-sarif@v4
               with:
                   sarif_file: sarif/snyk-${{ github.run_number }}.sarif
+
             - name: Archive code coverage results
               uses: actions/upload-artifact@v4
               with:
@@ -37,8 +39,11 @@ jobs:
                    aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
                    aws-region: us-east-1
 
+            -   name: Dump GitHub context
+                run:
+                    echo "S3 Bucket = ${{ secrets.AWS_S3_DOJO_BUCKET }}"
+
             - name: Upload files to S3
-              run: echo "S3 Bucket ${{ secrets.AWS_S3_DOJO_BUCKET }}"
               uses: jakejarvis/s3-sync-action@v0.5.1
               with:
                    args: # Optional
