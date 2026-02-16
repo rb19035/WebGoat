@@ -18,23 +18,23 @@ jobs:
               run: pip install semgrep
 
             - name: Run Semgrep SAST scan
-              run: semgrep scan --config auto --output sarif/semgrepSAST--${{ github.run_number }}.sarif
+              run: semgrep scan --config auto --output sarif/semgrepSAST-${{ github.run_number }}.sarif
 
             - name: Upload SAST SARIF report
               uses: github/codeql-action/upload-sarif@v4
               with:
-                sarif_file: sarif/semgrepSAST--${{ github.run_number }}.sarif
+                sarif_file: sarif/semgrepSAST-${{ github.run_number }}.sarif
 
             - name: Generate Maven dependency tree
               run: mvn dependency:tree -DoutputFile=dependencies.txt || true # '|| true' prevents job failure if tree generation has warnings
 
             - name: Run Semgrep SCA scan
-              run: semgrep --config "p/semgrep-supply-chain" --output sarif/semgrepSCA--${{ github.run_number }}.sarif
+              run: semgrep --config "p/semgrep-supply-chain" --output sarif/semgrepSCA-${{ github.run_number }}.sarif
 
             - name: Upload SCA SARIF report
               uses: github/codeql-action/upload-sarif@v4
               with:
-                sarif_file: sarif/semgrepSCA--${{ github.run_number }}.sarif
+                sarif_file: sarif/semgrepSCA-${{ github.run_number }}.sarif
 
             - name: Upload SARIF files to S3
               uses: jakejarvis/s3-sync-action@master
