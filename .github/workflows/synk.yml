@@ -42,5 +42,5 @@ jobs:
               with:
                    args: # Optional
                    env: # Optional
-                   AWS_S3_BUCKET: ${{ secrets.AWS_S3_DOJO_BUCKET }}
+                   AWS_S3_BUCKET: '${{ secrets.AWS_S3_DOJO_BUCKET }}'
                    SOURCE_DIR: 'sarif/'
