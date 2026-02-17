@@ -46,3 +46,9 @@ jobs:
                     cache: 'maven'
             -   name: Build with Maven
                 run: mvn --no-transfer-progress verify
+    security:
+        needs: [ build ]
+        runs-on: ubuntu-latest
+        steps:
+            - name: Run security scan
+              uses: ./.github/actions/java-setup
