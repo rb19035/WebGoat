@@ -46,9 +46,63 @@ jobs:
                     cache: 'maven'
             -   name: Build with Maven
                 run: mvn --no-transfer-progress verify
-    security:
+
+    security-sca:
         needs: [ build ]
         runs-on: ubuntu-latest
         steps:
-            - name: Run security scan
-              uses: ./.github/actions/java-setup
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Snyk SCA
+              uses: snyk/actions/maven-3-jdk-21@master
+              continue-on-error: true
+              env:
+                  SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+              with:
+                  args: --sarif-file-output=sarif/${{ github.event.repository.name }}.snyk.sca.${{ github.run_number }}.sarif
+
+            - name: SCA GAS Upload
+              uses: github/codeql-action/upload-sarif@v4
+              continue-on-error: true
+              with:
+                  sarif_file: sarif/${{ github.event.repository.name }}.snyk.sca.${{ github.run_number }}.sarif
+
+            - name: Sarif File Upload
+              uses: jakejarvis/s3-sync-action@master
+              env:
+                  AWS_S3_BUCKET: ${{ secrets.AWS_S3_DOJO_BUCKET}}
+                  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                  AWS_REGION: 'us-east-1'
+                  SOURCE_DIR: 'sarif'
+
+    security-sast:
+        needs: [ build ]
+        runs-on: ubuntu-latest
+        container:
+            image: semgrep/semgrep
+
+        # Skip any PR created by dependabot to avoid permission issues:
+        if: (github.actor != 'dependabot[bot]')
+
+        steps:
+            - uses: actions/checkout@v4
+            - run: mkdir -p sarif && semgrep ci --sarif > sarif/${{ github.event.repository.name }}.semgrep-ce.sast.${{ github.run_number }}.sarif
+              env:
+                  SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+
+            - name: SAST GAS Upload
+              continue-on-error: true
+              uses: github/codeql-action/upload-sarif@v4
+              with:
+                  sarif_file: sarif/${{ github.event.repository.name }}.semgrep-ce.sast.${{ github.run_number }}.sarif
+
+            - name: Sarif File Upload
+              uses: jakejarvis/s3-sync-action@master
+              env:
+                  AWS_S3_BUCKET: ${{ secrets.AWS_S3_DOJO_BUCKET}}
+                  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                  AWS_REGION: 'us-east-1'
+                  SOURCE_DIR: 'sarif'
